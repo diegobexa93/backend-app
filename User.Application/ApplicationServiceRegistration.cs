@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using User.Application.Contracts;
+using User.Application.Services;
 using User.Domain.Security;
 
 namespace User.Application
@@ -19,6 +21,9 @@ namespace User.Application
                 options.Issuer = configuration["JwtOptions:Issuer"]!;
                 options.Audience = configuration["JwtOptions:Audience"]!;
             });
+
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
+
 
             return services;
         }

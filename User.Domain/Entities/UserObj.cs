@@ -18,7 +18,10 @@ namespace User.Domain.Entities
 
             Person = person;
         }
-
+        public void SetHashPassword(string crypto)
+        {
+            Password = crypto;
+        }
 
     }
 }

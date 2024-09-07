@@ -1,0 +1,13 @@
+services:
+  user.api:
+    image: ${DOCKER_REGISTRY-}userapi
+    build:
+      context: .
+      dockerfile: User.API/Dockerfile
+
+  yarpgateway.api:
+    image: ${DOCKER_REGISTRY-}yarpgatewayapi
+    build:
+      context: .
+      dockerfile: YARPGateway.API/Dockerfile
+
