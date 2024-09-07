@@ -31,8 +31,5 @@ WORKDIR /app
 # Copy the published app from the publish stage
 COPY --from=publish /app/publish .
 
-# Set environment variables to specify the database path (optional)
-ENV DATABASE_PATH=/app/db/user.db
-
 # Set the entrypoint to run the application
 ENTRYPOINT ["dotnet", "User.API.dll"]
