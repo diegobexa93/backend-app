@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System;
 using User.API.Middleware;
 using User.Application;
 using User.Infrastructure;
+using User.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -73,7 +75,6 @@ builder.Services.AddExceptionHandler<ExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 var app = builder.Build();
-
 
 app.UseExceptionHandler();
 
