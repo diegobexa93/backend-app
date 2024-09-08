@@ -10,6 +10,7 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - D:\WorksGit\backend-app\Database:/app/Database # Mounting the Database directory
 
   yarpgateway.api:
     environment:
