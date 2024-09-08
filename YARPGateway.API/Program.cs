@@ -55,6 +55,19 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:4200")
+                   .AllowAnyMethod()
+                   .AllowAnyHeader()
+                   .AllowCredentials()
+                   .SetIsOriginAllowed(origin => true) // Add this if there are multiple origins
+                   .WithExposedHeaders("Access-Control-Allow-Origin"); // Expose this header if necessary
+        });
+});
 
 var app = builder.Build();
 
