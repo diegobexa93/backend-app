@@ -4,10 +4,11 @@ namespace User.Application.Dtos
 {
     public class AuthenticationResponseDto
     {
-        public AuthenticationResponseDto(string token, string refreshToken)
+        public AuthenticationResponseDto(string token, string refreshToken, string name)
         {
             Token = token;
             RefreshToken = refreshToken;
+            Name = name;
         }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -15,6 +16,9 @@ namespace User.Application.Dtos
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string RefreshToken { get; private set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string Name { get; private set; }
 
     }
 }

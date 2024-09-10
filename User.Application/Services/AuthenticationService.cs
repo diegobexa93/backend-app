@@ -40,7 +40,7 @@ namespace User.Application.Services
             var tokenAccess = await GenerateAccessToken(userDb);
             var tokenRefresh = await GenerateRefreshToken(userDb);
 
-            return new AuthenticationResponseDto(tokenAccess, tokenRefresh);
+            return new AuthenticationResponseDto(tokenAccess, tokenRefresh, userDb.Person!.Name);
         }
 
         private static Error[] ValidateAuthentication(AuthenticationRequestDto request)
