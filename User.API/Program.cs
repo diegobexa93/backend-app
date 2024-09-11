@@ -2,20 +2,19 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System;
+using System.Text.Json;
 using User.API.Middleware;
 using User.Application;
 using User.Infrastructure;
-using User.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 builder.Services.AddControllers();
 
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
+bool.TryParse(builder.Configuration["Logging:Trace:Enable"], out bool enableTrace);
 
 // Add Swagger services
 builder.Services.AddEndpointsApiExplorer();
@@ -52,7 +51,6 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -66,9 +64,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     };
 });
 
-builder.Services.AddAuthorization();
-
-
 builder.Services.AddMemoryCache();
 
 builder.Services.AddExceptionHandler<ExceptionHandler>();
@@ -79,16 +74,16 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAllOrigins",
         builder =>
         {
-            builder.WithOrigins("http://localhost:4200")
+            builder.AllowAnyOrigin()
                    .AllowAnyMethod()
-                   .AllowAnyHeader()
-                   .AllowCredentials()
-                   .SetIsOriginAllowed(origin => true) // Add this if there are multiple origins
-                   .WithExposedHeaders("Access-Control-Allow-Origin"); // Expose this header if necessary
+                   .AllowAnyHeader();
         });
 });
 
 var app = builder.Build();
+
+if (enableTrace)
+    app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.UseExceptionHandler();
 
@@ -101,11 +96,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowAllOrigins"); // Use the CORS policy
 
-app.UseHttpsRedirection();
-
+app.UseRouting();
 app.UseJwksDiscovery();
 app.UseAuthentication();
 app.UseAuthorization();
+//app.UseHttpsRedirection();
 
 app.MapControllers();
 

@@ -9,15 +9,23 @@ builder.Services.AddControllers();
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
+bool.TryParse(builder.Configuration["Logging:Trace:Enable"], out bool enableTrace);
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(x =>
 {
-    x.RequireHttpsMetadata = true;
     x.SaveToken = true; // keep the public key at Cache for 10 min.
     x.IncludeErrorDetails = true; // <- great for debugging
-    x.SetJwksOptions(new JwkOptions("https://localhost:44354/jwks", "https://localhost:44354/"));
+    x.BackchannelHttpHandler = new HttpClientHandler
+    {
+        ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; } // Ignore certificate validation for development
+    };
+    x.SetJwksOptions(new JwkOptions("https://host.docker.internal:8081/jwks",
+                                    issuer: "https://host.docker.internal:8081",
+                                    audience: "NetDevPack.Security.Jwt.AspNet"));
 });
 
-// Add HttpClientFactory
+
+
 builder.Services.AddHttpClient();
 
 // Add Swagger services
@@ -60,16 +68,16 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAllOrigins",
         builder =>
         {
-            builder.WithOrigins("http://localhost:4200")
+            builder.AllowAnyOrigin()
                    .AllowAnyMethod()
-                   .AllowAnyHeader()
-                   .AllowCredentials()
-                   .SetIsOriginAllowed(origin => true) // Add this if there are multiple origins
-                   .WithExposedHeaders("Access-Control-Allow-Origin"); // Expose this header if necessary
+                   .AllowAnyHeader();
         });
 });
 
 var app = builder.Build();
+
+if (enableTrace)
+    app.UseMiddleware<RequestLoggingMiddleware>();
 
 // Use YARP
 app.MapGet("/", () => "YARP API Gateway is running...");
@@ -86,8 +94,10 @@ app.UseCors("AllowAllOrigins"); // Use the CORS policy
 
 app.UseAuthentication();
 app.UseAuthorization();
+//app.UseHttpsRedirection();
 
 app.MapReverseProxy();
 
 app.MapControllers();
+
 app.Run();
