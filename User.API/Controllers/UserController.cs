@@ -6,6 +6,7 @@ using User.API.Helper;
 using User.Application.Services.User.Commands.CreateUser;
 using User.Application.Services.User.Commands.DeleteUser;
 using User.Application.Services.User.Commands.UpdateUser;
+using User.Application.Services.User.Queries.GetList;
 
 namespace User.API.Controllers
 {
@@ -33,6 +34,13 @@ namespace User.API.Controllers
         public async Task<IResult> DeleteUser(Guid hashId)
         {
             var result = await _mediator.Send(new DeleteUserCommand(hashId));
+            return result.Match(Results.Ok, ApiResults.Problem);
+        }
+
+        [HttpGet]
+        public async Task<IResult> GetAll()
+        {
+            var result = await _mediator.Send(new GetListQuery());
             return result.Match(Results.Ok, ApiResults.Problem);
         }
     }
