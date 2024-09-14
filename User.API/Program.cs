@@ -1,7 +1,11 @@
 
+using BaseShare.Common.Domain;
+using BaseShare.Common.Interface.Communication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Refit;
 using System.Text.Json;
 using User.API.Middleware;
 using User.Application;
@@ -79,6 +83,15 @@ builder.Services.AddCors(options =>
                    .AllowAnyHeader();
         });
 });
+
+builder.Services.AddRefitClient<IMessageBrokerLog>()
+    .ConfigureHttpClient((sp, httpClient) =>
+    {
+        var settings = sp.GetRequiredService<IOptions<MessageBrokerLogSettings>>().Value;
+
+        httpClient.BaseAddress = new Uri(settings.BaseAddress);
+    });
+
 
 var app = builder.Build();
 

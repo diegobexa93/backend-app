@@ -22,3 +22,33 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+
+  rabbitmq:
+     ports:
+      - "5672:5672"   # RabbitMQ port for application connections
+      - "15672:15672" # RabbitMQ Management UI port    
+     environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest    
+     volumes:
+      - rabbitmq_data:/var/lib/rabbitmq  
+     networks:
+      - rabbitmq_net
+
+  logmessagebroker.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5060;https://+:5061
+    ports:
+      - "5060"
+      - "5061"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+
+volumes:
+  rabbitmq_data:
+
+networks:
+  rabbitmq_net:
+

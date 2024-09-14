@@ -11,3 +11,14 @@ services:
       context: .
       dockerfile: YARPGateway.API/Dockerfile
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+
+
+  logmessagebroker.api:
+    image: ${DOCKER_REGISTRY-}logmessagebrokerapi
+    build:
+      context: .
+      dockerfile: LogMessageBroker.API/Dockerfile
+

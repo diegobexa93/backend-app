@@ -5,7 +5,8 @@
       "commandVersion": "1.0",
       "serviceActions": {
         "user.api": "StartDebugging",
-        "yarpgateway.api": "StartDebugging"
+        "yarpgateway.api": "StartDebugging",
+        "logmessagebroker.api": "StartDebugging"
       }
     }
   }

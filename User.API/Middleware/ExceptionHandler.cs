@@ -1,10 +1,13 @@
 ﻿using BaseShare.Common.Exceptions;
+using BaseShare.Common.Interface.Communication;
+using EventBusRabbitMQ.Events;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace User.API.Middleware
 {
-    internal sealed class ExceptionHandler : IExceptionHandler
+    internal sealed class ExceptionHandler() : IExceptionHandler
     {
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
@@ -50,6 +53,23 @@ namespace User.API.Middleware
                     Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1" // 500 Internal Server Error
                 }
             };
+
+            var log = new LogExceptionsEvent
+            {
+                Title = problemDetails.Title,
+                Detail = problemDetails.Detail,
+                StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError,
+                Type = problemDetails.Type,
+                Extensions = problemDetails.Extensions
+            };
+
+            var services = new ServiceCollection();
+            var serviceProvider = services.BuildServiceProvider();
+
+            var messageBrokerLog = serviceProvider.GetRequiredService<IMessageBrokerLog>();
+
+            await messageBrokerLog.CreateLogUserAPI(log);
+
 
             httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
             httpContext.Response.ContentType = "application/problem+json";
