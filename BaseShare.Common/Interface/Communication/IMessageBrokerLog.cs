@@ -7,5 +7,8 @@ namespace BaseShare.Common.Interface.Communication
     {
         [Post("/api/LogExceptions/CreateLogUserAPI")]
         Task CreateLogUserAPI([Body] LogExceptionsEvent logEvent);
+
+        [Post("/api/Trace/CreateTraceUserAPI")]
+        Task CreateTraceUserAPI([Body] TraceRequestEvent logTrace);
     }
 }

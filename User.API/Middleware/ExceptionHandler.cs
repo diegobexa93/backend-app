@@ -27,12 +27,10 @@ namespace User.API.Middleware
             {
                 // Resolve the IMessageBrokerLog service and send the log to another API
                 var messageBrokerLog = serviceProvider.GetRequiredService<IMessageBrokerLog>();
-                await messageBrokerLog.CreateLogUserAPI(log);
+                _= messageBrokerLog.CreateLogUserAPI(log);
             }
             catch (Exception logEx)
             {
-                // Consider logging the logging failure (to a different service, local storage, etc.)
-                // To avoid breaking the error handling process if logging fails
                 Console.WriteLine($"Failed to log exception: {logEx.Message}");
             }
 

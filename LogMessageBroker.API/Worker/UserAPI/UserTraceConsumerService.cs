@@ -7,19 +7,19 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
 
-namespace LogMessageBroker.API.Worker
+namespace LogMessageBroker.API.Worker.UserAPI
 {
-    public class LogUserAPIExceptionsConsumerService : BackgroundService
+    public class UserTraceConsumerService : BackgroundService
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger<LogUserAPIExceptionsConsumerService> _logger;
+        private readonly ILogger<UserTraceConsumerService> _logger;
         private readonly RabbitMQSetting _rabbitMqSetting;
         private IConnection _connection;
         private IModel _channel;
 
-        public LogUserAPIExceptionsConsumerService(IOptions<RabbitMQSetting> rabbitMqSetting, 
-                                                   IServiceProvider serviceProvider, 
-                                                   ILogger<LogUserAPIExceptionsConsumerService> logger)
+        public UserTraceConsumerService(IOptions<RabbitMQSetting> rabbitMqSetting,
+                                       IServiceProvider serviceProvider,
+                                       ILogger<UserTraceConsumerService> logger)
         {
             _rabbitMqSetting = rabbitMqSetting.Value;
             _serviceProvider = serviceProvider;
@@ -38,14 +38,14 @@ namespace LogMessageBroker.API.Worker
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            StartConsuming(RabbitMQQueues.UserLogAPI, stoppingToken);
+            StartConsuming(RabbitMQQueues.UserTraceAPI, stoppingToken);
             await Task.CompletedTask;
         }
 
 
         private void StartConsuming(string queueName, CancellationToken cancellationToken)
         {
-            _channel.QueueDeclare(queue: queueName, durable: false, exclusive: false, 
+            _channel.QueueDeclare(queue: queueName, durable: false, exclusive: false,
                                   autoDelete: false, arguments: null);
 
             var consumer = new EventingBasicConsumer(_channel);
@@ -85,12 +85,12 @@ namespace LogMessageBroker.API.Worker
                 using (var scope = _serviceProvider.CreateScope())
                 {
 
-                    var logexceptionService = scope.ServiceProvider.GetRequiredService<ILogExceptionService>();
-                    var obj = JsonConvert.DeserializeObject<LogExceptionsEvent>(message);
+                    var traceService = scope.ServiceProvider.GetRequiredService<ITraceService>();
+                    var obj = JsonConvert.DeserializeObject<TraceRequestEvent>(message);
 
                     if (obj is not null)
                     {
-                        await logexceptionService.AddAsync("userLogAPI", obj);
+                        await traceService.AddAsync("userTraceAPI", obj);
                         return true;
                     }
                     else
@@ -110,6 +110,5 @@ namespace LogMessageBroker.API.Worker
             _connection.Close();
             base.Dispose();
         }
-
     }
 }

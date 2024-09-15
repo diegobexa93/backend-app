@@ -3,6 +3,8 @@
 public static class RabbitMQQueues
 {
     public const string UserLogAPI = "userLogAPIQueue";
+    public const string UserTraceAPI = "userTraceAPIQueue";
+
 }
 
 public class RabbitMQSetting

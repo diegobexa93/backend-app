@@ -5,7 +5,7 @@ using EventBusRabbitMQ.Interface;
 using EventBusRabbitMQ.Services;
 using LogMessageBroker.API.Interface;
 using LogMessageBroker.API.Services;
-using LogMessageBroker.API.Worker;
+using LogMessageBroker.API.Worker.UserAPI;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +18,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<RabbitMQSetting>(builder.Configuration.GetSection("RabbitMQ"));
 builder.Services.AddScoped(typeof(IRabbitMQPublisher<>), typeof(RabbitMQPublisher<>));
-builder.Services.AddHostedService<LogUserAPIExceptionsConsumerService>();
+builder.Services.AddHostedService<UserLogExceptionsConsumerService>();
+builder.Services.AddHostedService<UserTraceConsumerService>();
 
 
 builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
@@ -26,6 +27,7 @@ builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("Mo
 // Register MongoContext as a scoped service for DI
 builder.Services.AddScoped(typeof(MongoContext<>));
 builder.Services.AddScoped<ILogExceptionService, LogExceptionService>();
+builder.Services.AddScoped<ITraceService, TraceService>();
 
 
 var app = builder.Build();
