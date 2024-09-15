@@ -3,7 +3,10 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080;https://+:8081
-      - DATABASE_PATH=/app/db/user.db 
+      - DATABASE_PATH=/app/db/user.db
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__UserName=guest
+      - RabbitMQ__Password=guest
     ports:
       - "8080:8080"
       - "8081:8081"
@@ -11,6 +14,7 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
       - D:\WorksGit\backend-app\Database:/app/Database # Mounting the Database directory
+
 
   yarpgateway.api:
     environment:
@@ -29,26 +33,28 @@ services:
       - "15672:15672" # RabbitMQ Management UI port    
      environment:
       RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest    
-     volumes:
-      - rabbitmq_data:/var/lib/rabbitmq  
-     networks:
-      - rabbitmq_net
+      RABBITMQ_DEFAULT_PASS: guest
+      
+  mongodb:
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - mongodb_data:/data/db  # Persist MongoDB data
+
 
   logmessagebroker.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5060;https://+:5061
     ports:
-      - "5060"
-      - "5061"
+      - "5060:5060"
+      - "5061:5061"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
 
 volumes:
-  rabbitmq_data:
-
-networks:
-  rabbitmq_net:
-
+  mongodb_data:  # Create a named volume for MongoDB data persistence

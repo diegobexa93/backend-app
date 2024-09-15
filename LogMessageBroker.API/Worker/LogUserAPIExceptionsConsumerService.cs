@@ -29,7 +29,8 @@ namespace LogMessageBroker.API.Worker
             {
                 HostName = _rabbitMqSetting.HostName,
                 UserName = _rabbitMqSetting.UserName,
-                Password = _rabbitMqSetting.Password
+                Password = _rabbitMqSetting.Password,
+                Port = _rabbitMqSetting.Port,
             };
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();

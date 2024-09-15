@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Refit;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using User.API.Middleware;
 using User.Application;
@@ -84,13 +85,25 @@ builder.Services.AddCors(options =>
         });
 });
 
+builder.Services.AddOptions<MessageBrokerLogSettings>()
+    .BindConfiguration(MessageBrokerLogSettings.ConfigurationSection)
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
 builder.Services.AddRefitClient<IMessageBrokerLog>()
     .ConfigureHttpClient((sp, httpClient) =>
     {
         var settings = sp.GetRequiredService<IOptions<MessageBrokerLogSettings>>().Value;
 
         httpClient.BaseAddress = new Uri(settings.BaseAddress);
-    });
+
+    }).ConfigurePrimaryHttpMessageHandler(() =>
+    {
+        return new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+        };
+    });//remove this to production only localhost
 
 
 var app = builder.Build();

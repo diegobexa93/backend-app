@@ -12,8 +12,12 @@ services:
       dockerfile: YARPGateway.API/Dockerfile
 
   rabbitmq:
-    image: rabbitmq:3-management
+    image: rabbitmq:management
     container_name: rabbitmq
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
 
 
   logmessagebroker.api:

@@ -5,6 +5,7 @@ using EventBusRabbitMQ.Interface;
 using EventBusRabbitMQ.Services;
 using LogMessageBroker.API.Interface;
 using LogMessageBroker.API.Services;
+using LogMessageBroker.API.Worker;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<RabbitMQSetting>(builder.Configuration.GetSection("RabbitMQ"));
 builder.Services.AddScoped(typeof(IRabbitMQPublisher<>), typeof(RabbitMQPublisher<>));
+builder.Services.AddHostedService<LogUserAPIExceptionsConsumerService>();
+
 
 builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
 

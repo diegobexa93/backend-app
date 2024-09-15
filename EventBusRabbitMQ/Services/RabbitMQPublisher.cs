@@ -22,17 +22,27 @@ namespace EventBusRabbitMQ.Services
             {
                 HostName = _rabbitMqSetting.HostName,
                 UserName = _rabbitMqSetting.UserName,
-                Password = _rabbitMqSetting.Password
+                Password = _rabbitMqSetting.Password,
+                Port = _rabbitMqSetting.Port
             };
 
-            using var connection = factory.CreateConnection();
-            using var channel = connection.CreateModel();
-            channel.QueueDeclare(queue: queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
+            try
+            {
+                using var connection = factory.CreateConnection();
+                using var channel = connection.CreateModel();
+                channel.QueueDeclare(queue: queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
 
-            var messageJson = JsonConvert.SerializeObject(message);
-            var body = Encoding.UTF8.GetBytes(messageJson);
+                var messageJson = JsonConvert.SerializeObject(message);
+                var body = Encoding.UTF8.GetBytes(messageJson);
 
-            await Task.Run(() => channel.BasicPublish(exchange: "", routingKey: queueName, basicProperties: null, body: body));
+                await Task.Run(() => channel.BasicPublish(exchange: "", routingKey: queueName, basicProperties: null, body: body));
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+
         }
     }
 }

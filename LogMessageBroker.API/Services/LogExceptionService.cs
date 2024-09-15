@@ -18,7 +18,7 @@ namespace LogMessageBroker.API.Services
             await _context.InsertAsync(colletionName, log);
         }
 
-        public async Task<IEnumerable<LogExceptionsEvent>> GetAllPeopleAsync(string colletionName)
+        public async Task<IEnumerable<LogExceptionsEvent>> GetAllAsync(string colletionName)
         {
             return await _context.GetAllAsync(colletionName);
         }
