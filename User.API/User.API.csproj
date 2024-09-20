@@ -27,4 +27,10 @@
     <ProjectReference Include="..\User.Infrastructure\User.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="RequestLoggingMiddlewareLib">
+      <HintPath>..\..\RequestLoggingComponent\src\RequestLoggingMiddlewareLib\bin\Debug\net8.0\RequestLoggingMiddlewareLib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
