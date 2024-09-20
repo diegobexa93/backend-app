@@ -12,8 +12,6 @@ builder.Services.AddControllers();
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
-bool.TryParse(builder.Configuration["Logging:Trace:Enable"], out bool enableTrace);
-
 // Add Swagger services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -80,6 +78,8 @@ builder.Services.AddRabbitMqLoggingServices(builder.Configuration);
 var app = builder.Build();
 
 app.UseRequestLoggingMiddleware();
+
+app.UseExceptionLoggingMiddleware();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
