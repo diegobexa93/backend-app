@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using NetDevPack.Security.JwtExtensions;
+using RequestLoggingMiddlewareLib.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
@@ -8,8 +9,6 @@ builder.Services.AddControllers();
 // Add YARP services
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
-
-bool.TryParse(builder.Configuration["Logging:Trace:Enable"], out bool enableTrace);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(x =>
 {
@@ -74,10 +73,13 @@ builder.Services.AddCors(options =>
         });
 });
 
+builder.Services.AddRabbitMqLoggingServices(builder.Configuration);
+
+
 var app = builder.Build();
 
-if (enableTrace)
-    app.UseMiddleware<RequestLoggingMiddleware>();
+app.UseRequestLoggingMiddleware();
+app.UseExceptionLoggingMiddleware();
 
 // Use YARP
 app.MapGet("/", () => "YARP API Gateway is running...");
