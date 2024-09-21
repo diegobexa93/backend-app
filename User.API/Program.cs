@@ -78,7 +78,6 @@ builder.Services.AddRabbitMqLoggingServices(builder.Configuration);
 var app = builder.Build();
 
 app.UseRequestLoggingMiddleware();
-
 app.UseExceptionLoggingMiddleware();
 
 // Configure the HTTP request pipeline.
