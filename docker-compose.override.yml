@@ -13,7 +13,6 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
-      - D:\WorksGit\backend-app\Database:/app/Database # Mounting the Database directory
 
 
   yarpgateway.api:
@@ -57,4 +56,4 @@ services:
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
 
 volumes:
-  mongodb_data:  # Create a named volume for MongoDB data persistence
+  mongodb_data:

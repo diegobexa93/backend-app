@@ -18,18 +18,18 @@ namespace User.Infrastructure
                     .PersistKeysToDatabaseStore<UserContext>();
 
             services.AddDbContext<UserContext>(options =>
-             options.UseSqlite(configuration.GetConnectionString("DefaultConnection"),
-                        sqliteOptions =>
-                        {
-                            sqliteOptions.ExecutionStrategy(dependencies =>
-                                new SqliteRetryingExecutionStrategy(dependencies, maxRetryCount: 5,
-                                                                    maxRetryDelay: TimeSpan.FromSeconds(10)));
-                        }));
+                     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
+                         sqlServerOptions =>
+                         {
+                             sqlServerOptions.EnableRetryOnFailure(
+                                 maxRetryCount: 5,
+                                 maxRetryDelay: TimeSpan.FromSeconds(30),
+                                 errorNumbersToAdd: null);
+                         }));
 
 
             services.AddScoped(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
             services.AddScoped<IUserRepository, UserRepository>();
-
 
             return services;
         }

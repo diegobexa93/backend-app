@@ -15,14 +15,14 @@ spec:
       containers:
       - name: user-api
         image: userapi:latest
+        imagePullPolicy: Never
         ports:
           - containerPort: 8080
-          - containerPort: 8081
         env:
           - name: ASPNETCORE_ENVIRONMENT
             value: "Development"
           - name: ASPNETCORE_URLS
-            value: "http://+:8080;https://+:8081"
+            value: "http://+:8080"
           - name: DATABASE_PATH
             value: "/app/db/user.db"
           - name: RabbitMQ__HostName
@@ -31,25 +31,13 @@ spec:
             value: "guest"
           - name: RabbitMQ__Password
             value: "guest"
-        volumeMounts:
-          - name: db-volume
-            mountPath: /app/Database
-          - name: user-secrets-volume
-            mountPath: /home/app/.microsoft/usersecrets
-            readOnly: true
-          - name: https-volume
-            mountPath: /home/app/.aspnet/https
-            readOnly: true
-      volumes:
-        - name: db-volume
-          hostPath:
-            path: "D:/WorksGit/backend-app/Database"
-        - name: user-secrets-volume
-          hostPath:
-            path: "${APPDATA}/Microsoft/UserSecrets"
-        - name: https-volume
-          hostPath:
-            path: "${APPDATA}/ASP.NET/Https"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "512Mi"
+            cpu: "1"
 
 ---
 apiVersion: apps/v1
@@ -69,29 +57,21 @@ spec:
       containers:
       - name: yarpgateway-api
         image: yarpgatewayapi:latest
+        imagePullPolicy: Never
         ports:
           - containerPort: 8084
-          - containerPort: 8085
         env:
           - name: ASPNETCORE_ENVIRONMENT
             value: "Development"
           - name: ASPNETCORE_URLS
-            value: "http://+:8084;https://+:8085"
-        volumeMounts:
-          - name: user-secrets-volume
-            mountPath: /home/app/.microsoft/usersecrets
-            readOnly: true
-          - name: https-volume
-            mountPath: /home/app/.aspnet/https
-            readOnly: true
-      volumes:
-        - name: user-secrets-volume
-          hostPath:
-            path: "${APPDATA}/Microsoft/UserSecrets"
-        - name: https-volume
-          hostPath:
-            path: "${APPDATA}/ASP.NET/Https"
-
+            value: "http://+:8084"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "512Mi"
+            cpu: "1"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -110,29 +90,21 @@ spec:
       containers:
       - name: logmessagebroker-api
         image: logmessagebrokerapi:latest
+        imagePullPolicy: Never
         ports:
           - containerPort: 5060
-          - containerPort: 5061
         env:
           - name: ASPNETCORE_ENVIRONMENT
             value: "Development"
           - name: ASPNETCORE_URLS
-            value: "http://+:5060;https://+:5061"
-        volumeMounts:
-          - name: user-secrets-volume
-            mountPath: /home/app/.microsoft/usersecrets
-            readOnly: true
-          - name: https-volume
-            mountPath: /home/app/.aspnet/https
-            readOnly: true
-      volumes:
-        - name: user-secrets-volume
-          hostPath:
-            path: "${APPDATA}/Microsoft/UserSecrets"
-        - name: https-volume
-          hostPath:
-            path: "${APPDATA}/ASP.NET/Https"
-
+            value: "http://+:5060"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "512Mi"
+            cpu: "1"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -159,8 +131,15 @@ spec:
             value: "guest"
           - name: RABBITMQ_DEFAULT_PASS
             value: "guest"
-
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "512Mi"
+            cpu: "1"
 ---
+# MongoDB Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -187,8 +166,15 @@ spec:
             value: "password"
         volumeMounts:
           - name: mongodb-data
-            mountPath: /data/db
+            mountPath: /data/db  # Inside the container where MongoDB will store its data
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "512Mi"
+            cpu: "1"
       volumes:
         - name: mongodb-data
           persistentVolumeClaim:
-            claimName: mongodb-pvc
+            claimName: mongodb-pvc  # Use the PVC defined above
